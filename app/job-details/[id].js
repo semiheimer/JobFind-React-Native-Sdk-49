@@ -26,45 +26,46 @@ const JobDetails = () => {
   const params = useLocalSearchParams();
   const router = useRouter();
 
-  const [data, isLoading, error, refetch] = useFetch("job-details", {
-    job_id: params.id,
-  });
+  const [data, isLoading, error, refetch] = useFetch(
+    {
+      job_id: params.id,
+    },
+    "job-details"
+  );
 
   const [activeTab, setActiveTab] = useState(tabs[0]);
   const [refreshing, setRefreshing] = useState(false);
 
-  const onRefresh = useCallback(() => {
+  // const onRefresh = useCallback(() => {
+  //   setRefreshing(true);
+  //   refetch();
+  //   setRefreshing(false);
+  // }, []);
+
+  const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    refetch();
-    setRefreshing(false);
+    try {
+      await refetch();
+    } catch (error) {
+    } finally {
+      setRefreshing(false);
+    }
   }, []);
 
-  const displayTabContent = () => {
-    switch (activeTab) {
-      case "Qualifications":
-        return (
-          <Specifics
-            title="Qualifications"
-            points={data[0].job_highlights?.Qualifications ?? ["N/A"]}
-          />
-        );
-
-      case "About":
-        return (
-          <JobAbout info={data[0].job_description ?? "No data provided"} />
-        );
-
-      case "Responsibilities":
-        return (
-          <Specifics
-            title="Responsibilities"
-            points={data[0].job_highlights?.Responsibilities ?? ["N/A"]}
-          />
-        );
-
-      default:
-        return null;
-    }
+  const contentTab = {
+    Qualifications: (
+      <Specifics
+        title="Qualifications"
+        points={data[0]?.job_highlights?.Qualifications ?? ["N/A"]}
+      />
+    ),
+    About: <JobAbout info={data[0]?.job_description ?? "No data provided"} />,
+    Responsibilities: (
+      <Specifics
+        title="Responsibilities"
+        points={data[0]?.job_highlights?.Responsibilities ?? ["N/A"]}
+      />
+    ),
   };
 
   return (
@@ -115,12 +116,10 @@ const JobDetails = () => {
                 activeTab={activeTab}
                 setActiveTab={setActiveTab}
               />
-
-              {displayTabContent()}
+              {contentTab[activeTab]}
             </View>
           )}
         </ScrollView>
-
         <JobFooter
           url={
             data[0]?.job_google_link ??

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   View,
   Text,
@@ -13,26 +13,28 @@ import { icons, SIZES } from "../../../constants";
 
 const jobTypes = ["Full-time", "Part-time", "Contractor"];
 
-const Welcome = () => {
-  const [activeJobType, setActiveJobType] = useState();
+const Welcome = ({ searchTerm, setSearchTerm, handlePress }) => {
   const router = useRouter();
+  const [activeJobType, setActiveJobType] = useState("Full-time");
+  console.log(searchTerm);
   return (
     <View>
       <View style={styles.container}>
-        <Text style={styles.userName}>Hello Sem</Text>
-        <Text style={styles.welcomeMessage}>Find job</Text>
+        <Text style={styles.userName}>Hello Semih</Text>
+        <Text style={styles.welcomeMessage}>Find your perfect job</Text>
       </View>
 
       <View style={styles.searchContainer}>
         <View style={styles.searchWrapper}>
           <TextInput
             style={styles.searchInput}
-            value=""
-            onChange={() => {}}
-            placeholder="What are you looking for"
+            value={searchTerm}
+            onChangeText={(text) => setSearchTerm(text)}
+            placeholder="What are you looking for?"
           />
         </View>
-        <Pressable style={styles.searchBtn}>
+
+        <Pressable style={styles.searchBtn} onPress={handlePress}>
           <Image
             source={icons.search}
             resizeMode="contain"
@@ -40,6 +42,7 @@ const Welcome = () => {
           />
         </Pressable>
       </View>
+
       <View style={styles.tabsContainer}>
         <FlatList
           data={jobTypes}
@@ -57,7 +60,6 @@ const Welcome = () => {
           keyExtractor={(item) => item}
           contentContainerStyle={{ columnGap: SIZES.small }}
           horizontal
-
         />
       </View>
     </View>
