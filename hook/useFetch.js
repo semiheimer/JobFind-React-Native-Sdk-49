@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { RAPID_API_KEY } from "@env";
 
-export default useFetch = (endpoint, query) => {
+export default useFetch = (query, endpoint = "search") => {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -35,7 +35,6 @@ export default useFetch = (endpoint, query) => {
   }, []);
 
   const refetch = () => {
-    setIsLoading(true);
     fetchData();
   };
 
