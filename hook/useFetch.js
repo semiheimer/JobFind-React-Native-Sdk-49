@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { RAPID_API_KEY } from "@env";
+import useSWR from "swr";
+import { useCallback, useEffect, useState } from "react";
 
-export default useFetch = (query, endpoint = "search") => {
-  const [data, setData] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+const baseURL = "https://jsearch.p.rapidapi.com/";
 
+export const useGetJobs = ({ query, endpoint = "search" }) => {
+  const URL = `${baseURL}${endpoint}`;
   const options = {
     method: "GET",
-    url: `https://jsearch.p.rapidapi.com/${endpoint}`,
+    url: URL,
     params: {
       ...query,
     },
@@ -18,7 +18,36 @@ export default useFetch = (query, endpoint = "search") => {
       "X-RapidAPI-Host": "jsearch.p.rapidapi.com",
     },
   };
-  const fetchData = async () => {
+
+  const fetcher = async () =>
+    await axios.request(options).then((res) => res?.data?.data);
+
+  const { isLoading, data, mutate, error } = useSWR(URL, () =>
+    fetcher(options)
+  );
+  const mutateData = async () => await mutateData(fetcher());
+  return { data, isLoading, error, mutateData };
+};
+
+export const useGetJobDetails = ({ query, endpoint = "job-details" }) => {
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const URL = `${baseURL}${endpoint}`;
+  const options = {
+    method: "GET",
+    url: URL,
+    params: {
+      ...query,
+    },
+    headers: {
+      "X-RapidAPI-Key": RAPID_API_KEY,
+      "X-RapidAPI-Host": "jsearch.p.rapidapi.com",
+    },
+  };
+
+  const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
       const response = await axios.request(options);
@@ -29,14 +58,10 @@ export default useFetch = (query, endpoint = "search") => {
     } finally {
       setIsLoading(false);
     }
-  };
+  });
+
   useEffect(() => {
     fetchData();
   }, []);
-
-  const refetch = () => {
-    fetchData();
-  };
-
-  return [data, isLoading, error, refetch];
+  return [data, isLoading, error];
 };

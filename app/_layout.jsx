@@ -24,7 +24,7 @@ const Layout = () => {
   }, [error]);
   if (!fontsLoaded) return null;
 
-  return <Stack onLayout={onLaoyutRootView}></Stack>;
+  return <Stack onLayout={onLaoyutRootView} />;
 };
 
 export default Layout;

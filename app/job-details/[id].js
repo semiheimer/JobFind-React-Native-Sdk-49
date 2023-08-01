@@ -18,52 +18,49 @@ import {
   Specifics,
 } from "../../components";
 import { COLORS, icons, SIZES } from "../../constants";
-import useFetch from "../../hook/useFetch";
+import { useGetJobDetails } from "../../hook/useFetch";
 
 const tabs = ["About", "Qualifications", "Responsibilities"];
 
 const JobDetails = () => {
   const params = useLocalSearchParams();
   const router = useRouter();
-
-  const [data, isLoading, error, refetch] = useFetch(
-    {
+  const initialParams = {
+    query: {
       job_id: params.id,
     },
-    "job-details"
-  );
+    endpoint: "job-details",
+  };
+
+  const [data, isLoading, error] = useGetJobDetails(initialParams);
 
   const [activeTab, setActiveTab] = useState(tabs[0]);
   const [refreshing, setRefreshing] = useState(false);
 
-  // const onRefresh = useCallback(() => {
-  //   setRefreshing(true);
-  //   refetch();
-  //   setRefreshing(false);
-  // }, []);
-
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     try {
-      await refetch();
+      await mutate(initialParams);
     } catch (error) {
-    } finally {
-      setRefreshing(false);
+      console.log(error);
     }
+    setRefreshing(false);
   }, []);
 
   const contentTab = {
     Qualifications: (
       <Specifics
         title="Qualifications"
-        points={data[0]?.job_highlights?.Qualifications ?? ["N/A"]}
+        points={data?.at(0)?.job_highlights?.Qualifications ?? ["N/A"]}
       />
     ),
-    About: <JobAbout info={data[0]?.job_description ?? "No data provided"} />,
+    About: (
+      <JobAbout info={data?.at(0)?.job_description ?? "No data provided"} />
+    ),
     Responsibilities: (
       <Specifics
         title="Responsibilities"
-        points={data[0]?.job_highlights?.Responsibilities ?? ["N/A"]}
+        points={data?.at(0)?.job_highlights?.Responsibilities ?? ["N/A"]}
       />
     ),
   };
@@ -106,10 +103,10 @@ const JobDetails = () => {
           {!error && !isLoading && data?.length > 0 && (
             <View style={{ padding: SIZES.medium, paddingBottom: 100 }}>
               <Company
-                companyLogo={data[0].employer_logo}
-                jobTitle={data[0].job_title}
-                companyName={data[0].employer_name}
-                location={data[0].job_country}
+                companyLogo={data?.at(0).employer_logo}
+                jobTitle={data?.at(0).job_title}
+                companyName={data?.at(0).employer_name}
+                location={data?.at(0).job_country}
               />
               <JobTabs
                 tabs={tabs}
@@ -122,7 +119,7 @@ const JobDetails = () => {
         </ScrollView>
         <JobFooter
           url={
-            data[0]?.job_google_link ??
+            data?.at(0)?.job_google_link ??
             "https://careers.google.com/jobs/results/"
           }
         />

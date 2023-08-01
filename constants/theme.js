@@ -27,7 +27,7 @@ const SIZES = {
 
 const SHADOWS = {
   small: {
-    shadowColor: "#000",
+    boxShadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,

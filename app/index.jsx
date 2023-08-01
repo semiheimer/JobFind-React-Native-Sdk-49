@@ -3,8 +3,9 @@ import {
   ScrollView,
   SafeAreaView,
   ActivityIndicator,
+  Text,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Stack, useRouter } from "expo-router";
 import { COLORS, icons, images, SIZES } from "../constants";
 import {
@@ -13,14 +14,19 @@ import {
   ScreenHeaderBtn,
   Welcome,
 } from "../components";
+import { useGetJobs } from "../hook/useFetch";
+import { RefreshControl } from "react-native";
 
 function Home() {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
-  const [data, isLoading, error] = useFetch({
-    query: "React Native developer",
-    num_pages: "1",
+  const { data, isLoading, error, mutateData } = useGetJobs({
+    query: {
+      query: "React Native developer",
+      num_pages: "1",
+    },
   });
+  const [refreshing, setRefreshing] = useState(false);
 
   const screenHeaderBtnLeft = (
     <ScreenHeaderBtn iconUrl={icons.menu} dimension="60%" />
@@ -33,6 +39,17 @@ function Home() {
       router.push(`/search/${searchTerm}`);
     else alert("Please enter the value  to search");
   };
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      mutate();
+    } catch (error) {
+      console.log(error);
+    }
+    setRefreshing(false);
+  }, []);
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.lightWhite }}>
       <Stack.Screen
@@ -44,7 +61,12 @@ function Home() {
           headerTitle: "",
         }}
       />
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         <View style={{ flex: 1, padding: SIZES.medium }}>
           <Welcome
             searchTerm={searchTerm}

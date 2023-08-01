@@ -16,7 +16,7 @@ const jobTypes = ["Full-time", "Part-time", "Contractor"];
 const Welcome = ({ searchTerm, setSearchTerm, handlePress }) => {
   const router = useRouter();
   const [activeJobType, setActiveJobType] = useState("Full-time");
-  console.log(searchTerm);
+
   return (
     <View>
       <View style={styles.container}>
