@@ -25,26 +25,21 @@ const tabs = ["About", "Qualifications", "Responsibilities"];
 const JobDetails = () => {
   const params = useLocalSearchParams();
   const router = useRouter();
-  const initialParams = {
-    query: {
-      job_id: params.id,
-    },
-    endpoint: "job-details",
-  };
-
-  const [data, isLoading, error] = useGetJobDetails(initialParams);
-
+   const {data, isLoading, error,mutate} = useGetJobDetails("job-details" ,  {
+    job_id: params.id
+  });
   const [activeTab, setActiveTab] = useState(tabs[0]);
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     try {
-      await mutate(initialParams);
+      await mutate();
     } catch (error) {
       console.log(error);
+    }finally{
+      setRefreshing(false);
     }
-    setRefreshing(false);
   }, []);
 
   const contentTab = {
@@ -85,7 +80,6 @@ const JobDetails = () => {
           headerTitle: "",
         }}
       />
-
       <>
         <ScrollView
           showsVerticalScrollIndicator={false}

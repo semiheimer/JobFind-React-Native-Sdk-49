@@ -1,8 +1,8 @@
-import React from "react";
-import { useRouter } from "expo-router";
-import { View, Text, Pressable } from "react-native";
-import styles from "./nearbyjobs.style";
-import NearbyJobCard from "../../common/cards/nearby/NearbyJobCard";
+import React from 'react';
+import { useRouter } from 'expo-router';
+import { View, Text, Pressable } from 'react-native';
+import styles from './nearbyjobs.style';
+import NearbyJobCard from '../../common/cards/nearby/NearbyJobCard';
 
 function NearbyJobs({ data }) {
   const router = useRouter();

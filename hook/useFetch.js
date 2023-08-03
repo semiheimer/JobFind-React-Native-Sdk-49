@@ -1,67 +1,44 @@
-import axios from "axios";
-import { RAPID_API_KEY } from "@env";
-import useSWR from "swr";
-import { useCallback, useEffect, useState } from "react";
+import useSWR from 'swr';
+import { useCallback, useEffect, useState } from 'react';
+import { get } from '../utils/axiosHelper';
 
-const baseURL = "https://jsearch.p.rapidapi.com/";
+export const useGetJobs = ( endpoint,query) => {
+  const fetcher = async () => await get(endpoint,query)
 
-export const useGetJobs = ({ query, endpoint = "search" }) => {
-  const URL = `${baseURL}${endpoint}`;
-  const options = {
-    method: "GET",
-    url: URL,
-    params: {
-      ...query,
-    },
-    headers: {
-      "X-RapidAPI-Key": RAPID_API_KEY,
-      "X-RapidAPI-Host": "jsearch.p.rapidapi.com",
-    },
+  const {
+    isLoading, data, mutate, error,
+  } = useSWR(endpoint,  fetcher);
+  const mutateData = async () => await mutate(fetcher());
+  return {
+    data, isLoading, error, mutateData,
   };
-
-  const fetcher = async () =>
-    await axios.request(options).then((res) => res?.data?.data);
-
-  const { isLoading, data, mutate, error } = useSWR(URL, () =>
-    fetcher(options)
-  );
-  const mutateData = async () => await mutateData(fetcher());
-  return { data, isLoading, error, mutateData };
 };
 
-export const useGetJobDetails = ({ query, endpoint = "job-details" }) => {
+export const useGetJobDetails = (endpoint,query) => {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const URL = `${baseURL}${endpoint}`;
-  const options = {
-    method: "GET",
-    url: URL,
-    params: {
-      ...query,
-    },
-    headers: {
-      "X-RapidAPI-Key": RAPID_API_KEY,
-      "X-RapidAPI-Host": "jsearch.p.rapidapi.com",
-    },
-  };
-
-  const fetchData = useCallback(async () => {
+  const fetchData = useCallback(async (endpoint,query) => {
     setIsLoading(true);
     try {
-      const response = await axios.request(options);
-      setData(response?.data?.data);
+      const response = await get(endpoint,query);
+      setData(response);
     } catch (error) {
-      alert("There is an error");
+      alert('There is an error');
       setError(error);
     } finally {
       setIsLoading(false);
     }
   });
-
   useEffect(() => {
-    fetchData();
+    fetchData(endpoint,query);
   }, []);
-  return [data, isLoading, error];
+
+  const mutate= (endpoint,query) => {
+
+    fetchData(endpoint,query);
+  };
+
+  return {data, isLoading, error,mutate};
 };

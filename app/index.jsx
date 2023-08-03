@@ -5,7 +5,7 @@ import {
   ActivityIndicator,
   Text,
 } from "react-native";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import { Stack, useRouter } from "expo-router";
 import { COLORS, icons, images, SIZES } from "../constants";
 import {
@@ -17,15 +17,15 @@ import {
 import { useGetJobs } from "../hook/useFetch";
 import { RefreshControl } from "react-native";
 
-function Home() {
+const Home=()=> {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
-  const { data, isLoading, error, mutateData } = useGetJobs({
-    query: {
+  const { data, isLoading, error, mutateData } = useGetJobs(
+  "search",{
       query: "React Native developer",
       num_pages: "1",
     },
-  });
+  );
   const [refreshing, setRefreshing] = useState(false);
 
   const screenHeaderBtnLeft = (

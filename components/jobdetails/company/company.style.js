@@ -9,7 +9,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   logoBox: {
-    width: 80,
+    width: 180,
     height: 80,
     justifyContent: "center",
     alignItems: "center",
@@ -17,8 +17,9 @@ const styles = StyleSheet.create({
     borderRadius: SIZES.large,
   },
   logoImage: {
-    width: "80%",
-    height: "80%",
+    width: "90%",
+    height: "90%",
+    resizeMode: "contain",
   },
   jobTitleBox: {
     marginTop: SIZES.small,
